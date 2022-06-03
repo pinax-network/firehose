@@ -347,6 +347,8 @@ github.com/pinax-network/dmetering v0.0.0-20220602163203-fdb64a72cef0 h1:tXZ8PvU
 github.com/pinax-network/dmetering v0.0.0-20220602163203-fdb64a72cef0/go.mod h1:bCAVBgl2YrkPmz8lVvL+LMz7FEWbcdLyvZnQF969pSQ=
 github.com/pinax-network/dmetering v0.0.0-20220603134802-eb929e68f1e2 h1:pq9lkMJQQUQGWtNPXMb/avqX8PYkjYZijFmV+oq4mR0=
 github.com/pinax-network/dmetering v0.0.0-20220603134802-eb929e68f1e2/go.mod h1:bCAVBgl2YrkPmz8lVvL+LMz7FEWbcdLyvZnQF969pSQ=
+github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57 h1:B7/XJmc4ngQ5BWgbpknJX92NMkS8auAx2nrQV9Hzoq8=
+github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57/go.mod h1:bCAVBgl2YrkPmz8lVvL+LMz7FEWbcdLyvZnQF969pSQ=
 github.com/pinax-network/dtypes v0.0.0-20220602153950-d88cb0624df8/go.mod h1:4JunWeYwUyG+UQkgZeRkLFSO2QyY4d0KW1+txFqP2FI=
 github.com/pinax-network/dtypes v0.0.0-20220602164155-e63e72cc442e h1:lAHsP8rbiV+Tpe7mAicuK3alrUPkrH1MfD3a7GxiXZY=
 github.com/pinax-network/dtypes v0.0.0-20220602164155-e63e72cc442e/go.mod h1:RyGwP9qlOrLG2WM4pacVgwbvn+vricwOvcEA2jSO+0A=
