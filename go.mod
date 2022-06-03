@@ -3,7 +3,7 @@ module github.com/streamingfast/firehose
 go 1.15
 
 require (
-	github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d // indirect
+	github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d
 	github.com/streamingfast/bstream v0.0.2-0.20220330124346-02408ab3db65
 	github.com/streamingfast/dauth v0.0.0-20210812020920-1c83ba29add1
 	github.com/streamingfast/dgrpc v0.0.0-20220301153539-536adf71b594
@@ -26,4 +26,4 @@ replace github.com/census-instrumentation/opencensus-proto v0.1.0-0.201812141439
 
 replace github.com/streamingfast/dauth => github.com/pinax-network/dauth v0.0.0-20220602162200-4b180cbd79e6
 
-replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.0.0-20220602163203-fdb64a72cef0
+replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.0.0-20220603134802-eb929e68f1e2
