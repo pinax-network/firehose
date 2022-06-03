@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/pinax-network/dtypes/metering"
 	"strings"
 
 	"github.com/streamingfast/bstream/transform"
@@ -39,16 +40,17 @@ func New(
 	listenAddr string,
 ) *Server {
 
-	postHookFunc := (func(ctx context.Context, response *pbfirehose.Response) {
+	postHookFunc := func(ctx context.Context, response *pbfirehose.Response) {
 		//////////////////////////////////////////////////////////////////////
-		dmetering.EmitWithContext(dmetering.Event{
-			Source:      "firehose",
-			Kind:        "gRPC Stream",
-			Method:      "Blocks",
-			EgressBytes: int64(proto.Size(response)),
+		dmetering.EmitWithContext(metering.Event{
+			Source:         "firehose",
+			Kind:           "gRPC Stream",
+			Method:         "Blocks",
+			EgressBytes:    int64(proto.Size(response)),
+			ResponsesCount: 1,
 		}, ctx)
 		//////////////////////////////////////////////////////////////////////
-	})
+	}
 
 	options := []dgrpc.ServerOption{
 		dgrpc.WithLogger(logger),
