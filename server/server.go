@@ -43,10 +43,11 @@ func New(
 	postHookFunc := func(ctx context.Context, response *pbfirehose.Response) {
 		//////////////////////////////////////////////////////////////////////
 		dmetering.EmitWithContext(metering.Event{
-			Source:      "firehose",
-			Kind:        "gRPC Stream",
-			Method:      "Blocks",
-			EgressBytes: int64(proto.Size(response)),
+			Source:         "firehose",
+			Kind:           "gRPC Stream",
+			Method:         "Blocks",
+			EgressBytes:    int64(proto.Size(response)),
+			ResponsesCount: 1,
 		}, ctx)
 		//////////////////////////////////////////////////////////////////////
 	}
