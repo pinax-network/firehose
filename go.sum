@@ -172,6 +172,7 @@ github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
 github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
+github.com/golang-jwt/jwt/v4 v4.4.1/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
@@ -346,6 +347,8 @@ github.com/pinax-network/dmetering v0.0.0-20220602163203-fdb64a72cef0/go.mod h1:
 github.com/pinax-network/dtypes v0.0.0-20220602153950-d88cb0624df8/go.mod h1:4JunWeYwUyG+UQkgZeRkLFSO2QyY4d0KW1+txFqP2FI=
 github.com/pinax-network/dtypes v0.0.0-20220602164155-e63e72cc442e h1:lAHsP8rbiV+Tpe7mAicuK3alrUPkrH1MfD3a7GxiXZY=
 github.com/pinax-network/dtypes v0.0.0-20220602164155-e63e72cc442e/go.mod h1:RyGwP9qlOrLG2WM4pacVgwbvn+vricwOvcEA2jSO+0A=
+github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d h1:R0k4zzkcgrXX5KHL8CVRz10ZfKUWb0wfLmaACrX1SHo=
+github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d/go.mod h1:UwVDC9dHfZzaLyGRJe27DCLKmUdVjBZ0SPHo+xQSalE=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

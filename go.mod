@@ -3,7 +3,7 @@ module github.com/streamingfast/firehose
 go 1.15
 
 require (
-	github.com/pinax-network/dtypes v0.0.0-20220602164155-e63e72cc442e // indirect
+	github.com/pinax-network/dtypes v0.0.0-20220603133335-8b1cfcb0055d // indirect
 	github.com/streamingfast/bstream v0.0.2-0.20220330124346-02408ab3db65
 	github.com/streamingfast/dauth v0.0.0-20210812020920-1c83ba29add1
 	github.com/streamingfast/dgrpc v0.0.0-20220301153539-536adf71b594
