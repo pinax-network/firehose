@@ -44,7 +44,7 @@ func New(
 	listenAddr string,
 ) *Server {
 
-	postHookFunc := (func(ctx context.Context, response *pbfirehoseV2.Response) {
+	postHookFunc := func(ctx context.Context, response *pbfirehoseV2.Response) {
 		//////////////////////////////////////////////////////////////////////
 		dmetering.EmitWithContext(metering.Event{
 			Source:         "firehose",
