@@ -203,6 +203,8 @@ github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keL
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
 github.com/golang-jwt/jwt/v4 v4.4.1 h1:pC5DB52sCeK48Wlb9oPcdhnjkz1TKt1D/P7WKJ0kUcQ=
 github.com/golang-jwt/jwt/v4 v4.4.1/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
+github.com/golang-jwt/jwt/v4 v4.4.2 h1:rcc4lwaZgFMCZ5jxF9ABolDcIHdBytAFgqFPbSJQAYs=
+github.com/golang-jwt/jwt/v4 v4.4.2/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/glog v1.0.0 h1:nfP3RFugxnNRyKgeWd4oI1nYvXpxrx8ck8ZrcizshdQ=
 github.com/golang/glog v1.0.0/go.mod h1:EWib/APOK0SL3dFbYqvxE3UYd8E6s1ouQ7iEp/0LWV4=
@@ -407,6 +409,8 @@ github.com/pierrec/lz4 v2.6.1+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi
 github.com/pierrec/lz4/v4 v4.1.15/go.mod h1:gZWDp/Ze/IJXGXf23ltt2EXimqmTUXEy0GFuRQyBid4=
 github.com/pinax-network/dauth v0.0.0-20220602162200-4b180cbd79e6 h1:rJYsFPadHaR9B+X4g82ujglldyPvmFHFn1Q5jJJuozo=
 github.com/pinax-network/dauth v0.0.0-20220602162200-4b180cbd79e6/go.mod h1:KTNIxwDd9ezNFGUUXZ9lAOb1o5ToliCgsovazaO26W8=
+github.com/pinax-network/dauth v0.1.0 h1:I8iXb9X0PM3xSf/hxnzpvo6ZGBfJ3MmRzYPtp/aVt98=
+github.com/pinax-network/dauth v0.1.0/go.mod h1:4hh3R/Sr6xb+IX+Yx7ZvC16yEm7WA5Y+U5v0WGznC8k=
 github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57 h1:B7/XJmc4ngQ5BWgbpknJX92NMkS8auAx2nrQV9Hzoq8=
 github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57/go.mod h1:bCAVBgl2YrkPmz8lVvL+LMz7FEWbcdLyvZnQF969pSQ=
 github.com/pinax-network/dtypes v0.0.0-20220602153950-d88cb0624df8/go.mod h1:4JunWeYwUyG+UQkgZeRkLFSO2QyY4d0KW1+txFqP2FI=
