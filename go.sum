@@ -413,6 +413,8 @@ github.com/pinax-network/dauth v0.1.0 h1:I8iXb9X0PM3xSf/hxnzpvo6ZGBfJ3MmRzYPtp/a
 github.com/pinax-network/dauth v0.1.0/go.mod h1:4hh3R/Sr6xb+IX+Yx7ZvC16yEm7WA5Y+U5v0WGznC8k=
 github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57 h1:B7/XJmc4ngQ5BWgbpknJX92NMkS8auAx2nrQV9Hzoq8=
 github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57/go.mod h1:bCAVBgl2YrkPmz8lVvL+LMz7FEWbcdLyvZnQF969pSQ=
+github.com/pinax-network/dmetering v0.1.0 h1:WKlGJtGQOnnb4dweZvUKbnDaglyViN6pnuttApANLd8=
+github.com/pinax-network/dmetering v0.1.0/go.mod h1:dbOJ9HairFlOA3U3zWXSsAltk8E4IyooGC+3uVvEXFo=
 github.com/pinax-network/dtypes v0.0.0-20220602153950-d88cb0624df8/go.mod h1:4JunWeYwUyG+UQkgZeRkLFSO2QyY4d0KW1+txFqP2FI=
 github.com/pinax-network/dtypes v0.1.0 h1:KjdH8KfbpsuCJZ/zEJi9Kfj614ix9QLkkHf8tp7oXQ0=
 github.com/pinax-network/dtypes v0.1.0/go.mod h1:UwVDC9dHfZzaLyGRJe27DCLKmUdVjBZ0SPHo+xQSalE=

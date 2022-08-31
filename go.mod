@@ -112,4 +112,4 @@ replace github.com/census-instrumentation/opencensus-proto v0.1.0-0.201812141439
 
 replace github.com/streamingfast/dauth => github.com/pinax-network/dauth v0.1.0
 
-replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.0.0-20220603141736-d210c7855f57
+replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.1.0
