@@ -4,14 +4,19 @@ import (
 	"context"
 	"strings"
 
+	_ "github.com/mostynb/go-grpc-compression/zstd"
 	"github.com/streamingfast/bstream/transform"
 	dauth "github.com/streamingfast/dauth/authenticator"
 	"github.com/streamingfast/dgrpc"
 	"github.com/streamingfast/dmetering"
 	"github.com/streamingfast/dmetrics"
 	"github.com/streamingfast/firehose"
-	pbbstream "github.com/streamingfast/firehose/pb/dfuse/bstream/v1"
-	pbfirehose "github.com/streamingfast/pbgo/sf/firehose/v1"
+	pbfirehoseV1 "github.com/streamingfast/pbgo/sf/firehose/v1"
+	pbfirehoseV2 "github.com/streamingfast/pbgo/sf/firehose/v2"
+	_ "google.golang.org/grpc/encoding/gzip"
+
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -21,8 +26,7 @@ type Server struct {
 	streamFactory     *firehose.StreamFactory
 	transformRegistry *transform.Registry
 
-	ready        bool
-	postHookFunc func(context.Context, *pbfirehose.Response)
+	postHookFunc func(context.Context, *pbfirehoseV2.Response)
 
 	*dgrpc.Server
 	listenAddr string
@@ -39,7 +43,7 @@ func New(
 	listenAddr string,
 ) *Server {
 
-	postHookFunc := (func(ctx context.Context, response *pbfirehose.Response) {
+	postHookFunc := (func(ctx context.Context, response *pbfirehoseV2.Response) {
 		//////////////////////////////////////////////////////////////////////
 		dmetering.EmitWithContext(dmetering.Event{
 			Source:      "firehose",
@@ -50,9 +54,12 @@ func New(
 		//////////////////////////////////////////////////////////////////////
 	})
 
+	tracerProvider := otel.GetTracerProvider()
 	options := []dgrpc.ServerOption{
 		dgrpc.WithLogger(logger),
 		dgrpc.WithHealthCheck(dgrpc.HealthCheckOverGRPC|dgrpc.HealthCheckOverHTTP, createHealthCheck(isReady)),
+		dgrpc.WithPostUnaryInterceptor(otelgrpc.UnaryServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
+		dgrpc.WithPostStreamInterceptor(otelgrpc.StreamServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
 	}
 
 	if strings.Contains(listenAddr, "*") {
@@ -76,11 +83,8 @@ func New(
 
 	logger.Info("registering grpc services")
 	grpcServer.RegisterService(func(gs *grpc.Server) {
-		pbfirehose.RegisterStreamServer(gs, s)
-
-		// Legacy support the old BlockStreamV2 api
-		legacyBstreamV2Proxy := NewLegacyBstreamV2Proxy(s)
-		pbbstream.RegisterBlockStreamV2Server(gs, legacyBstreamV2Proxy)
+		pbfirehoseV2.RegisterStreamServer(gs, s)
+		pbfirehoseV1.RegisterStreamServer(gs, NewFirehoseProxyV1ToV2(s)) // compatibility with firehose
 	})
 
 	return s
@@ -88,14 +92,6 @@ func New(
 
 func (s *Server) Launch() {
 	s.Server.Launch(s.listenAddr)
-}
-
-func (s *Server) SetReady() {
-	s.ready = true
-}
-
-func (s *Server) IsReady() bool {
-	return s.ready
 }
 
 func createHealthCheck(isReady func(ctx context.Context) bool) dgrpc.HealthCheck {
