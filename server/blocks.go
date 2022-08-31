@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/bstream/stream"
 	"github.com/streamingfast/firehose/metrics"
 	"github.com/streamingfast/logging"
-	pbfirehose "github.com/streamingfast/pbgo/sf/firehose/v1"
+	pbfirehose "github.com/streamingfast/pbgo/sf/firehose/v2"
 	"go.uber.org/zap"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -27,7 +29,18 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 	ctx := streamSrv.Context()
 	logger := logging.Logger(ctx, s.logger)
 
-	var blockInterceptor func(blk interface{}) interface{}
+	if os.Getenv("FIREHOSE_SEND_HOSTNAME") != "" {
+		hostname, err := os.Hostname()
+		if err != nil {
+			hostname = "unknown"
+			logger.Warn("cannot determine hostname, using 'unknown'", zap.Error(err))
+		}
+		md := metadata.New(map[string]string{"hostname": hostname})
+		if err := streamSrv.SendHeader(md); err != nil {
+			logger.Warn("cannot send metadata header", zap.Error(err))
+		}
+	}
+
 	handlerFunc := bstream.HandlerFunc(func(block *bstream.Block, obj interface{}) error {
 		cursorable := obj.(bstream.Cursorable)
 		cursor := cursorable.Cursor()
@@ -38,26 +51,24 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 		wrapped := obj.(bstream.ObjectWrapper)
 		obj = wrapped.WrappedObject()
 		if obj == nil {
-			obj = block
+			obj = block.ToProtocol()
+		}
+
+		protoStep, skip := stepToProto(step, request.FinalBlocksOnly)
+		if skip {
+			return nil
 		}
 
 		resp := &pbfirehose.Response{
-			Step:   stepToProto(step),
+			Step:   protoStep,
 			Cursor: cursor.ToOpaque(),
 		}
 
-		switch v := obj.(type) { // use filtered block if passed as object
-		case *bstream.Block:
-			if v != nil {
-				block = v
-			}
-			anyProtocolBlock, err := block.ToAny(true, blockInterceptor)
-			if err != nil {
-				return fmt.Errorf("to any: %w", err)
-			}
-			resp.Block = anyProtocolBlock
+		switch v := obj.(type) {
+		case *anypb.Any:
+			resp.Block = v
+			break
 		case proto.Message:
-			// this is handling the transform cases
 			cnt, err := anypb.New(v)
 			if err != nil {
 				return fmt.Errorf("to any: %w", err)
@@ -101,14 +112,19 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 			outputFunc := func(cursor *bstream.Cursor, message *anypb.Any) error {
 				var blocknum uint64
 				var opaqueCursor string
-				var forkStep pbfirehose.ForkStep
+				var outStep pbfirehose.ForkStep
 				if cursor != nil {
 					blocknum = cursor.Block.Num()
 					opaqueCursor = cursor.ToOpaque()
-					forkStep = stepToProto(cursor.Step)
+
+					protoStep, skip := stepToProto(cursor.Step, request.FinalBlocksOnly)
+					if skip {
+						return nil
+					}
+					outStep = protoStep
 				}
 				resp := &pbfirehose.Response{
-					Step:   forkStep,
+					Step:   outStep,
 					Cursor: opaqueCursor,
 					Block:  message,
 				}
@@ -140,7 +156,7 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 		return status.Errorf(codes.Unimplemented, "no transforms registry configured within this instance")
 	}
 
-	str, err := s.streamFactory.New(ctx, handlerFunc, request, logger)
+	str, err := s.streamFactory.New(ctx, handlerFunc, request, true, logger) // firehose always want decoded the blocks
 	if err != nil {
 		return err
 	}
@@ -181,15 +197,19 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 
 }
 
-func stepToProto(step bstream.StepType) pbfirehose.ForkStep {
-	// This step mapper absorbs the Redo into a New for our consumesr.
-	switch step {
-	case bstream.StepNew, bstream.StepRedo:
-		return pbfirehose.ForkStep_STEP_NEW
-	case bstream.StepUndo:
-		return pbfirehose.ForkStep_STEP_UNDO
-	case bstream.StepIrreversible:
-		return pbfirehose.ForkStep_STEP_IRREVERSIBLE
+func stepToProto(step bstream.StepType, finalBlocksOnly bool) (outStep pbfirehose.ForkStep, skip bool) {
+	if finalBlocksOnly {
+		if step.Matches(bstream.StepIrreversible) {
+			return pbfirehose.ForkStep_STEP_FINAL, false
+		}
+		return 0, true
 	}
-	panic("unsupported step")
+
+	if step.Matches(bstream.StepNew) {
+		return pbfirehose.ForkStep_STEP_NEW, false
+	}
+	if step.Matches(bstream.StepUndo) {
+		return pbfirehose.ForkStep_STEP_UNDO, false
+	}
+	return 0, true // simply skip irreversible or stalled here
 }
