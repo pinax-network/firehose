@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/mostynb/go-grpc-compression v1.1.17
+	github.com/streamingfast/bstream v0.0.2-0.20220906182753-258f71638def
 	github.com/pinax-network/dtypes v0.1.0
-	github.com/streamingfast/bstream v0.0.2-0.20220810182344-114d9f8705b2
 	github.com/streamingfast/dauth v0.0.0-20210812020920-1c83ba29add1
 	github.com/streamingfast/dgrpc v0.0.0-20220906142324-2cc2e94f153f
 	github.com/streamingfast/dmetering v0.0.0-20220301165106-a642bb6a21bd
