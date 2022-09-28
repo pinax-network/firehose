@@ -2,13 +2,15 @@ package server
 
 import (
 	"context"
+	"net/url"
 	"github.com/pinax-network/dtypes/metering"
 	"strings"
 
 	_ "github.com/mostynb/go-grpc-compression/zstd"
 	"github.com/streamingfast/bstream/transform"
 	dauth "github.com/streamingfast/dauth/authenticator"
-	"github.com/streamingfast/dgrpc"
+	dgrpcserver "github.com/streamingfast/dgrpc/server"
+	"github.com/streamingfast/dgrpc/server/factory"
 	"github.com/streamingfast/dmetering"
 	"github.com/streamingfast/dmetrics"
 	"github.com/streamingfast/firehose"
@@ -29,10 +31,11 @@ type Server struct {
 
 	postHookFunc func(context.Context, *pbfirehoseV2.Response)
 
-	*dgrpc.Server
-	listenAddr string
-	logger     *zap.Logger
-	metrics    dmetrics.Set
+	dgrpcserver.Server
+	listenAddr       string
+	healthListenAddr string
+	logger           *zap.Logger
+	metrics          dmetrics.Set
 }
 
 func New(
@@ -42,6 +45,7 @@ func New(
 	authenticator dauth.Authenticator,
 	isReady func(context.Context) bool,
 	listenAddr string,
+	serviceDiscoveryURL *url.URL,
 ) *Server {
 
 	postHookFunc := func(ctx context.Context, response *pbfirehoseV2.Response) {
@@ -57,22 +61,25 @@ func New(
 	}
 
 	tracerProvider := otel.GetTracerProvider()
-	options := []dgrpc.ServerOption{
-		dgrpc.WithLogger(logger),
-		dgrpc.WithHealthCheck(dgrpc.HealthCheckOverGRPC|dgrpc.HealthCheckOverHTTP, createHealthCheck(isReady)),
-		dgrpc.WithPostUnaryInterceptor(otelgrpc.UnaryServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
-		dgrpc.WithPostStreamInterceptor(otelgrpc.StreamServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
+	options := []dgrpcserver.Option{
+		dgrpcserver.WithLogger(logger),
+		dgrpcserver.WithHealthCheck(dgrpcserver.HealthCheckOverGRPC|dgrpcserver.HealthCheckOverHTTP, createHealthCheck(isReady)),
+		dgrpcserver.WithPostUnaryInterceptor(otelgrpc.UnaryServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
+		dgrpcserver.WithPostStreamInterceptor(otelgrpc.StreamServerInterceptor(otelgrpc.WithTracerProvider(tracerProvider))),
+	}
+	options = append(options, dgrpcserver.WithAuthChecker(authenticator.Check, authenticator.GetAuthTokenRequirement() == dauth.AuthTokenRequired))
+
+	if serviceDiscoveryURL != nil {
+		options = append(options, dgrpcserver.WithServiceDiscoveryURL(serviceDiscoveryURL))
 	}
 
 	if strings.Contains(listenAddr, "*") {
-		options = append(options, dgrpc.InsecureServer())
+		options = append(options, dgrpcserver.WithInsecureServer())
 	} else {
-		options = append(options, dgrpc.PlainTextServer())
+		options = append(options, dgrpcserver.WithPlainTextServer())
 	}
 
-	options = append(options, dgrpc.WithAuthChecker(authenticator.Check, authenticator.GetAuthTokenRequirement() == dauth.AuthTokenRequired))
-
-	grpcServer := dgrpc.NewServer2(options...)
+	grpcServer := factory.ServerFromOptions(options...)
 
 	s := &Server{
 		Server:            grpcServer,
@@ -84,7 +91,7 @@ func New(
 	}
 
 	logger.Info("registering grpc services")
-	grpcServer.RegisterService(func(gs *grpc.Server) {
+	grpcServer.RegisterService(func(gs grpc.ServiceRegistrar) {
 		pbfirehoseV2.RegisterStreamServer(gs, s)
 		pbfirehoseV1.RegisterStreamServer(gs, NewFirehoseProxyV1ToV2(s)) // compatibility with firehose
 	})
@@ -96,7 +103,7 @@ func (s *Server) Launch() {
 	s.Server.Launch(s.listenAddr)
 }
 
-func createHealthCheck(isReady func(ctx context.Context) bool) dgrpc.HealthCheck {
+func createHealthCheck(isReady func(ctx context.Context) bool) dgrpcserver.HealthCheck {
 	return func(ctx context.Context) (bool, interface{}, error) {
 		return isReady(ctx), nil, nil
 	}

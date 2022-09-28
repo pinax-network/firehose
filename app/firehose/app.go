@@ -17,6 +17,7 @@ package firehose
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/streamingfast/bstream"
@@ -42,6 +43,7 @@ type Config struct {
 	BlockStreamAddr         string        // gRPC endpoint to get real-time blocks, can be "" in which live streams is disabled
 	GRPCListenAddr          string        // gRPC address where this app will listen to
 	GRPCShutdownGracePeriod time.Duration // The duration we allow for gRPC connections to terminate gracefully prior forcing shutdown
+	ServiceDiscoveryURL     *url.URL
 }
 
 type RegisterServiceExtensionFunc func(firehoseServer *server.Server, streamFactory *firehose.StreamFactory, logger *zap.Logger)
@@ -60,7 +62,6 @@ type App struct {
 	config  *Config
 	modules *Modules
 	logger  *zap.Logger
-
 	isReady *atomic.Bool
 }
 
@@ -103,22 +104,12 @@ func (a *App) Run() error {
 	var forkableHub *hub.ForkableHub
 
 	if withLive {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-		var initialLiveHeadBlock uint64
-		head, _, err := bstream.GetStreamHeadInfo(ctx, a.config.BlockStreamAddr)
-		if err != nil {
-			a.logger.Info("cannot get initial live stream head info, no startup optimization", zap.Error(err))
-		} else {
-			initialLiveHeadBlock = head.Num()
-		}
-		cancel()
-
 		liveSourceFactory := bstream.SourceFactory(func(h bstream.Handler) bstream.Source {
 
 			return blockstream.NewSource(
 				context.Background(),
 				a.config.BlockStreamAddr,
-				-1, // from LIB
+				2,
 				bstream.HandlerFunc(func(blk *bstream.Block, obj interface{}) error {
 					a.modules.HeadBlockNumberMetric.SetUint64(blk.Num())
 					a.modules.HeadTimeDriftMetric.SetBlockTime(blk.Time())
@@ -137,7 +128,6 @@ func (a *App) Run() error {
 		})
 
 		forkableHub = hub.NewForkableHub(liveSourceFactory, oneBlocksSourceFactory, 500)
-		forkableHub.InitialLiveSourceHeadNum = initialLiveHeadBlock // improve bootstrapping from blockstream directly
 		forkableHub.OnTerminated(a.Shutdown)
 
 		go forkableHub.Run()
@@ -155,19 +145,23 @@ func (a *App) Run() error {
 		a.logger.Warn("failed to setup open telemetry", zap.Error(err))
 	}
 
-	server := server.New(
+	firehoseServer := server.New(
 		a.modules.TransformRegistry,
 		streamFactory,
 		a.logger,
 		a.modules.Authenticator,
 		a.IsReady,
 		a.config.GRPCListenAddr,
+		a.config.ServiceDiscoveryURL,
 	)
-	a.OnTerminating(func(_ error) { server.Shutdown(a.config.GRPCShutdownGracePeriod) })
-	server.OnTerminated(a.Shutdown)
+
+	a.OnTerminating(func(_ error) {
+		firehoseServer.Shutdown(a.config.GRPCShutdownGracePeriod)
+	})
+	firehoseServer.OnTerminated(a.Shutdown)
 
 	if a.modules.RegisterServiceExtension != nil {
-		a.modules.RegisterServiceExtension(server, streamFactory, a.logger)
+		a.modules.RegisterServiceExtension(firehoseServer, streamFactory, a.logger)
 	}
 
 	go func() {
@@ -181,9 +175,9 @@ func (a *App) Run() error {
 			}
 		}
 
-		a.logger.Info("launching gRPC server", zap.Bool("live_support", withLive))
+		a.logger.Info("launching gRPC firehoseServer", zap.Bool("live_support", withLive))
 		a.isReady.CAS(false, true)
-		server.Launch()
+		firehoseServer.Launch()
 	}()
 
 	return nil
