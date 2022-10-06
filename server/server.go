@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"net/url"
+	"github.com/pinax-network/dtypes/metering"
 	"strings"
 
 	_ "github.com/mostynb/go-grpc-compression/zstd"
@@ -49,11 +50,12 @@ func New(
 
 	postHookFunc := func(ctx context.Context, response *pbfirehoseV2.Response) {
 		//////////////////////////////////////////////////////////////////////
-		dmetering.EmitWithContext(dmetering.Event{
-			Source:      "firehose",
-			Kind:        "gRPC Stream",
-			Method:      "Blocks",
-			EgressBytes: int64(proto.Size(response)),
+		dmetering.EmitWithContext(metering.Event{
+			Source:         "firehose",
+			Kind:           "gRPC Stream",
+			Method:         "Blocks",
+			EgressBytes:    int64(proto.Size(response)),
+			ResponsesCount: 1,
 		}, ctx)
 		//////////////////////////////////////////////////////////////////////
 	}
