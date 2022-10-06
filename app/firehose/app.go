@@ -83,6 +83,7 @@ func New(logger *zap.Logger, config *Config, modules *Modules) *App {
 
 func (a *App) Run() error {
 	dmetrics.Register(metrics.Metricset)
+	dmetrics.Register(bstream.Metrics)
 
 	a.logger.Info("running firehose", zap.Reflect("config", a.config))
 	if err := a.config.Validate(); err != nil {
