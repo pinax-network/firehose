@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"github.com/pinax-network/dtypes/metering"
-	"github.com/streamingfast/firehose/metrics"
 	"net/url"
 	"strings"
 
@@ -50,10 +49,6 @@ func New(
 ) *Server {
 
 	postHookFunc := func(ctx context.Context, response *pbfirehoseV2.Response) {
-
-		metrics.TotalBlocksStreamed.Inc()
-		metrics.TotalBlocksizeStreamed.AddInt(proto.Size(response))
-
 		//////////////////////////////////////////////////////////////////////
 		dmetering.EmitWithContext(metering.Event{
 			Source:         "firehose",

@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/mostynb/go-grpc-compression v1.1.17
-	github.com/streamingfast/bstream v0.0.2-0.20220909121429-4647fd1522c9
 	github.com/pinax-network/dtypes v0.1.0
+	github.com/streamingfast/bstream v0.0.2-0.20220909121429-4647fd1522c9
 	github.com/streamingfast/dauth v0.0.0-20210812020920-1c83ba29add1
 	github.com/streamingfast/dgrpc v0.0.0-20220909121013-162e9305bbfc
 	github.com/streamingfast/dmetering v0.0.0-20220301165106-a642bb6a21bd
@@ -117,3 +117,5 @@ replace github.com/census-instrumentation/opencensus-proto v0.1.0-0.201812141439
 replace github.com/streamingfast/dauth => github.com/pinax-network/dauth v0.1.0
 
 replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.1.0
+
+replace github.com/streamingfast/bstream => github.com/pinax-network/bstream v0.0.0-20221006110603-72b620f68f83

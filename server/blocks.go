@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/streamingfast/dtracing"
 	"os"
 	"time"
 
@@ -95,6 +96,11 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 		}
 
 		logger.Check(level, "stream sent block").Write(zap.Stringer("block", block), zap.Duration("duration", time.Since(start)))
+
+		// todo add dtracing.GetTraceIDIfExists(ctx) so we don't get a random trace id assigned if none is available
+		tracingId := dtracing.GetTraceID(ctx).String()
+		metrics.BlocksStreamed.Inc(tracingId)
+		metrics.BytesStreamed.AddInt(block.Payload.Size(), tracingId)
 
 		return nil
 	})

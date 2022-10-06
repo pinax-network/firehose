@@ -13,8 +13,8 @@ var RequestCounter = Metricset.NewCounter("firehose_requests_counter", "Request 
 var ActiveSubstreams = Metricset.NewGauge("firehose_active_substreams", "Number of active substreams requests")
 var SubstreamsCounter = Metricset.NewCounter("firehose_substreams_counter", "Substreams requests count")
 
-var TotalBlocksStreamed = Metricset.NewCounter("firehose_total_blocks_streamed", "Number of blocks streamed")
-var TotalBlocksizeStreamed = Metricset.NewCounter("firehose_total_blocksize_streamed", "Total size of blocks streamed")
+var BlocksStreamed = Metricset.NewCounterVec("firehose_blocks_streamed", []string{"trace_id"}, "Number of blocks streamed")
+var BytesStreamed = Metricset.NewCounterVec("firehose_bytes_streamed", []string{"trace_id"}, "Total size of blocks streamed")
 
 // var CurrentListeners = Metricset.NewGaugeVec("current_listeners", []string{"req_type"}, "...")
 // var TimedOutPushingTrxCount = Metricset.NewCounterVec("something", []string{"guarantee"}, "Number of requests for push_transaction timed out while submitting")

@@ -414,6 +414,8 @@ github.com/paulbellamy/ratecounter v0.2.0/go.mod h1:Hfx1hDpSGoqxkVVpBi/IlYD7kChl
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pierrec/lz4 v2.6.1+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pierrec/lz4/v4 v4.1.15/go.mod h1:gZWDp/Ze/IJXGXf23ltt2EXimqmTUXEy0GFuRQyBid4=
+github.com/pinax-network/bstream v0.0.0-20221006110603-72b620f68f83 h1:taNrigYSBgqnsW0M3sxwRk1U71GiXrYaOJhCSNi5fkM=
+github.com/pinax-network/bstream v0.0.0-20221006110603-72b620f68f83/go.mod h1:Njkx972HcZiz0djWBylxqO/eq686eDGr+egQ1lePj3Q=
 github.com/pinax-network/dauth v0.0.0-20220602162200-4b180cbd79e6 h1:rJYsFPadHaR9B+X4g82ujglldyPvmFHFn1Q5jJJuozo=
 github.com/pinax-network/dauth v0.0.0-20220602162200-4b180cbd79e6/go.mod h1:KTNIxwDd9ezNFGUUXZ9lAOb1o5ToliCgsovazaO26W8=
 github.com/pinax-network/dauth v0.1.0 h1:I8iXb9X0PM3xSf/hxnzpvo6ZGBfJ3MmRzYPtp/aVt98=
