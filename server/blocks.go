@@ -28,8 +28,7 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 	defer metrics.ActiveRequests.Dec()
 
 	ctx := streamSrv.Context()
-	// todo add dtracing.GetTraceIDIfExists(ctx) so we don't get a random trace id assigned if none is available
-	traceId := dtracing.GetTraceID(ctx).String()
+	traceId := dtracing.GetTraceIDOrEmpty(ctx).String()
 	logger := logging.Logger(ctx, s.logger)
 
 	if os.Getenv("FIREHOSE_SEND_HOSTNAME") != "" {
@@ -172,40 +171,40 @@ func (s Server) Blocks(request *pbfirehose.Request, streamSrv pbfirehose.Stream_
 	if err != nil {
 		if errors.Is(err, stream.ErrStopBlockReached) {
 			logger.Info("stream of blocks reached end block")
-			metrics.DisconnectReason.Inc(traceId, "end_of_blocks")
+			metrics.HandleDisconnect(traceId, "end_of_blocks")
 			return nil
 		}
 
 		if errors.Is(err, context.Canceled) {
-			metrics.DisconnectReason.Inc(traceId, "source_canceled")
+			metrics.HandleDisconnect(traceId, "source_canceled")
 			return status.Error(codes.Canceled, "source canceled")
 		}
 
 		if errors.Is(err, context.DeadlineExceeded) {
-			metrics.DisconnectReason.Inc(traceId, "source_deadline_exceeded")
+			metrics.HandleDisconnect(traceId, "source_deadline_exceeded")
 			return status.Error(codes.DeadlineExceeded, "source deadline exceeded")
 		}
 
 		var errInvalidArg *stream.ErrInvalidArg
 		if errors.As(err, &errInvalidArg) {
-			metrics.DisconnectReason.Inc(traceId, "invalid_argument")
+			metrics.HandleDisconnect(traceId, "invalid_argument")
 			return status.Error(codes.InvalidArgument, errInvalidArg.Error())
 		}
 
 		var errSendBlock *ErrSendBlock
 		if errors.As(err, &errSendBlock) {
 			logger.Info("unable to send block probably due to client disconnecting", zap.Error(errSendBlock.inner))
-			metrics.DisconnectReason.Inc(traceId, "client_disconnecting")
+			metrics.HandleDisconnect(traceId, "client_disconnecting")
 			return status.Error(codes.Unavailable, errSendBlock.inner.Error())
 		}
 
 		logger.Info("unexpected stream of blocks termination", zap.Error(err))
-		metrics.DisconnectReason.Inc(traceId, "unexpected_stream_termination")
+		metrics.HandleDisconnect(traceId, "unexpected_stream_termination")
 		return status.Errorf(codes.Internal, "unexpected stream termination")
 	}
 
 	logger.Error("source is not expected to terminate gracefully, should stop at block or continue forever")
-	metrics.DisconnectReason.Inc(traceId, "unexpected_stream_completion")
+	metrics.HandleDisconnect(traceId, "unexpected_stream_completion")
 	return status.Error(codes.Internal, "unexpected stream completion")
 
 }

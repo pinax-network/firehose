@@ -11,6 +11,7 @@ require (
 	github.com/streamingfast/dmetering v0.0.0-20220301165106-a642bb6a21bd
 	github.com/streamingfast/dmetrics v0.0.0-20220811180000-3e513057d17c
 	github.com/streamingfast/dstore v0.1.1-0.20220607202639-35118aeaf648
+	github.com/streamingfast/dtracing v0.0.0-20210811175635-d55665d3622a
 	github.com/streamingfast/logging v0.0.0-20220304214715-bc750a74b424
 	github.com/streamingfast/pbgo v0.0.6-0.20220630154121-2e8bba36234e
 	github.com/streamingfast/sf-tracing v0.0.0-20220829120927-5a5d2e0fe525
@@ -31,7 +32,7 @@ require (
 	cloud.google.com/go/monitoring v1.6.0 // indirect
 	cloud.google.com/go/storage v1.22.1 // indirect
 	cloud.google.com/go/trace v1.2.0 // indirect
-	contrib.go.opencensus.io/exporter/stackdriver v0.13.8 // indirect
+	contrib.go.opencensus.io/exporter/stackdriver v0.13.10 // indirect
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1 // indirect
 	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
 	github.com/Azure/azure-storage-blob-go v0.14.0 // indirect
@@ -82,7 +83,6 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
 	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
-	github.com/streamingfast/dtracing v0.0.0-20210811175635-d55665d3622a // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
@@ -114,8 +114,11 @@ require (
 // We replace with same commit, simply tricking go and tell him that's it's actually version 0.0.3
 replace github.com/census-instrumentation/opencensus-proto v0.1.0-0.20181214143942-ba49f56771b8 => github.com/census-instrumentation/opencensus-proto v0.0.3-0.20181214143942-ba49f56771b8
 
-replace github.com/streamingfast/dauth => github.com/pinax-network/dauth v0.1.0
+replace (
+	github.com/streamingfast/dauth => github.com/pinax-network/dauth v0.1.0
+	github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.1.0
 
-replace github.com/streamingfast/dmetering => github.com/pinax-network/dmetering v0.1.0
-
-replace github.com/streamingfast/bstream => github.com/pinax-network/bstream v0.0.0-20221006110603-72b620f68f83
+	github.com/streamingfast/bstream => github.com/pinax-network/bstream v0.0.0-20221006110603-72b620f68f83
+	github.com/streamingfast/dtracing => github.com/pinax-network/dtracing v0.0.0-20221007093316-91e3187b1e55
+	github.com/streamingfast/dmetrics => github.com/pinax-network/dmetrics v0.0.0-20221007092947-973c981de09f
+)
