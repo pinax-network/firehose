@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"net/url"
 	"github.com/pinax-network/dtypes/metering"
+	"net/url"
 	"strings"
 
 	_ "github.com/mostynb/go-grpc-compression/zstd"
