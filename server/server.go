@@ -42,6 +42,7 @@ type Server struct {
 func New(
 	transformRegistry *transform.Registry,
 	streamFactory *firehose.StreamFactory,
+	blockGetter *firehose.BlockGetter,
 	logger *zap.Logger,
 	authenticator dauth.Authenticator,
 	isReady func(context.Context) bool,
@@ -85,6 +86,7 @@ func New(
 	s := &Server{
 		Server:            grpcServer,
 		transformRegistry: transformRegistry,
+		blockGetter:       blockGetter,
 		streamFactory:     streamFactory,
 		listenAddr:        strings.ReplaceAll(listenAddr, "*", ""),
 		postHookFunc:      postHookFunc,
@@ -93,7 +95,9 @@ func New(
 
 	logger.Info("registering grpc services")
 	grpcServer.RegisterService(func(gs grpc.ServiceRegistrar) {
-		pbfirehoseV2.RegisterFetchServer(gs, s)
+		if blockGetter != nil {
+			pbfirehoseV2.RegisterFetchServer(gs, s)
+		}
 		pbfirehoseV2.RegisterStreamServer(gs, s)
 		pbfirehoseV1.RegisterStreamServer(gs, NewFirehoseProxyV1ToV2(s)) // compatibility with firehose
 	})
