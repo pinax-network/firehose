@@ -1,19 +1,12 @@
 # StreamingFast Firehose
-[![reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://pkg.go.dev/github.com/streamingfast/firehose)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A firehose-style stream of streamingfast Blocks app wrapper as part of **[StreamingFast](https://github.com/streamingfast/streamingfast)**.
+This is a fork of StreamingFast's firehose server, which can be found [here](https://github.com/streamingfast/firehose).
 
-## Contributing
-**Issues and PR in this repo related strictly to the core firehose service.**
+## Added functionality
 
-Report any protocol-specific issues in their
-[respective repositories](https://github.com/streamingfast/streamingfast#protocols)
+* Common JWT authentication by replacing the default dauth package with [this](https://github.com/pinax-network/dauth).
+* Redis Pub/Sub metering by replacing the default dmetering package with [this](https://github.com/pinax-network/dmetering).
 
-**Please first refer to the general
-[StreamingFast contribution guide](https://github.com/streamingfast/streamingfast/blob/master/CONTRIBUTING.md)**,
-if you wish to contribute to this code base.
+## Changed functionality
 
-## License
-
-[Apache 2.0](LICENSE)
+* When firehose will emit metering events it will track the `responses_count` as number of blocks emitted.
