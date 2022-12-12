@@ -3,6 +3,7 @@ module github.com/streamingfast/firehose
 go 1.18
 
 require (
+	github.com/pinax-network/dtypes v0.1.0
 	github.com/mostynb/go-grpc-compression v1.1.17
 	github.com/pinax-network/dtypes v0.1.0
 	github.com/streamingfast/bstream v0.0.2-0.20221017131819-2a7e38be1047
